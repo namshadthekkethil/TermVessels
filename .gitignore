@@ -1,3 +1,7 @@
 main.o
 *.o
 main
+updated_vessels_Lee_term_rad.csv
+*.csv.dat
+updated_vessels_Lee_term.csv
+updated_vessels_Lee_data_term.dat

@@ -152,7 +152,7 @@ void inside_elements(Mesh &mesh, double xl, double yl, double zl,
 }
 
 void update_vessel(vector<int> &p1, vector<int> &p2, vector<double> &x,
-                   vector<double> &y, vector<double> &z, vector<int> &dl,
+                   vector<double> &y, vector<double> &z, vector<double> &r, vector<int> &dl,
                    vector<int> &dr, vector<int> &pr, int i, Mesh &mesh) {
   // cout<<"i="<<i<<" dl[i]="<<dl[i]<<endl;
   if (dl[i] != -10) {
@@ -202,18 +202,26 @@ void update_vessel(vector<int> &p1, vector<int> &p2, vector<double> &x,
     // }
 
     if (dr[dl[i]] != -10)
-      inside_elements(mesh, xl, yl, zl, inside_LV);
+    {
+      //inside_elements(mesh, xl, yl, zl, inside_LV);
+      if(r[p1[i]] < 0.2)
+      inside_LV = 1;
+    }
 
     if (inside_LV == 0)
-      update_vessel(p1, p2, x, y, z, dl, dr, pr, dl[i], mesh);
+      update_vessel(p1, p2, x, y, z,r, dl, dr, pr, dl[i], mesh);
 
     if (dr[i] != -10) {
       inside_LV = 0;
       if (dr[dr[i]] != -10)
-        inside_elements(mesh, xl, yl, zl, inside_LV);
+      {
+        //inside_elements(mesh, xl, yl, zl, inside_LV);
+        if(r[p1[i]] < 0.2)
+        inside_LV = 1;
+      }
 
       if (inside_LV == 0)
-        update_vessel(p1, p2, x, y, z, dl, dr, pr, dr[i], mesh);
+        update_vessel(p1, p2, x, y, z,r, dl, dr, pr, dr[i], mesh);
     }
   }
 }
@@ -630,14 +638,14 @@ int main(int argc, char **argv) {
 
   vessels.push_back(vess_i);
 
-  update_vessel(p1, p2, x, y, z, dl, dr, pr, start_vess, mesh);
+  update_vessel(p1, p2, x, y, z,r, dl, dr, pr, start_vess, mesh);
 
   update_parent_daughter();
 
   assign_radius(r, p1, p2);
 
   ofstream file_vess;
-  file_vess.open("updated_vessels_Lee_term.csv", ios::out);
+  file_vess.open("updated_vessels_Lee_term_rad.csv", ios::out);
   file_vess << "\"x1\""
             << ",\"y1\""
             << ",\"z1\""
@@ -677,7 +685,7 @@ int main(int argc, char **argv) {
   file_vess.close();
 
   ofstream file_vess_dat;
-  file_vess_dat.open("updated_vessels_Lee_data_term.dat", ios::out);
+  file_vess_dat.open("updated_vessels_Lee_data_term_rad.dat", ios::out);
 
   for (int i = 0; i < vessels.size(); i++) {
     double x1_vess = x[vessels[i].p1];
